@@ -77,9 +77,6 @@ class MainController:
         self.github_connection = Github(self.github_username, self.github_password)
         self.base_folder = self.gui.base_folder_input.get().strip()
 
-        self.master1 = self.gui.master1_input.get()
-        self.master2 = self.gui.master2_input.get()
-
         # Go through all SP cases
         sp_keys = [sp.split(' ')[0].replace('[', '').replace(']', '') for sp in self.gui.backports_listbox.get()]
         self.gui.log_info("Starting to Backport...")
@@ -114,12 +111,14 @@ class MainController:
                 # Cherry-Pick commits.
                 base_bug = JIRAUtils.get_base_bug(self.jira_connection, sp_key)
                 commits = repository['commits']
+                urls = []
                 # Order commits by creation date.
                 commits.sort(key=sort_by_timestamp)
                 for commit in commits:
                     if commit['message'].startswith("[" + base_bug.key + "]"):
                         # Cherry-pick base case commits.
                         sha = commit['id']
+                        urls.append(commit['url'])
                         self.gui.log_info("Cherry-picking " + sha + ".")
                         try:
                             git.cherry_pick(sha)
@@ -129,8 +128,20 @@ class MainController:
                         # Rename commits with backport message.
                         commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary
                         git.commit('--amend', '-m', commit_message)
-                git.push("origin", sp_key)
+                # Push commits to origin's SP branch.
+                try:
+                    git.push("origin", sp_key)
+                except g.GitCommandError as gce:
+                    self.gui.log_error("Unable to push changes to origin " + sp_key + " branch: " + gce.stderr.strip())
+                    continue
 
+                # Build PR message.
+                self.master1 = self.gui.master1_input.get()
+                self.master2 = self.gui.master2_input.get()
+                pr_message = "Merge Masters: " + self.master1 + " and " + self.master2 + "\n"
+                pr_message += "Cherry-picks:\n"
+                for url in urls:
+                    pr_message += "\t" + url + "\n"
 
 def sort_by_timestamp(val):
     return val['authorTimestamp']
