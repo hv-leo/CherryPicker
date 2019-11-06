@@ -132,6 +132,7 @@ class MainController:
 
                 # Push commits to origin's SP branch.
                 try:
+                    self.gui.log_info("Pushing commits to " + sp_key + " branch.")
                     git.push("origin", sp_key)
                 except g.GitCommandError as gce:
                     self.gui.log_error("Unable to push changes to origin " + sp_key + " branch: " + gce.stderr.strip())
@@ -146,10 +147,12 @@ class MainController:
                     pr_message += "\t- " + url + "\n"
 
                 # Build and send Pull Request.
+                self.gui.log_info("Opening PR for " + sp_key + ".")
                 upstream_user = self.github_connection.get_user('pentaho')
                 upstream_repo = upstream_user.get_repo(repository['name'])
                 upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
-                                          '{}:{}'.format(self.github_username, sp_key))
+                                          '{}:{}'.format(self.github_username, sp_key), True)
+                self.gui.log_info("Done!")
 
 
 def sort_by_timestamp(val):
