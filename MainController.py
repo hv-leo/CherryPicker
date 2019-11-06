@@ -1,7 +1,5 @@
-import logging
 import os
 
-import github
 from github import Github
 from jira import JIRA, JIRAError
 
@@ -73,9 +71,11 @@ class MainController:
     def backport(self):
         self.gui.clear_logs()
 
+        # Connect to GitHub.
         self.github_username = self.gui.github_user_input.get().strip()
         self.github_password = self.gui.github_password_input.get()
         self.github_connection = Github(self.github_username, self.github_password)
+
         self.base_folder = self.gui.base_folder_input.get().strip()
 
         # Go through all SP cases
@@ -146,10 +146,10 @@ class MainController:
                     pr_message += "\t- " + url + "\n"
 
                 # Build and send Pull Request.
-                upstream_user = github.get_user(self.github_username)
+                upstream_user = self.github_connection.get_user('pentaho')
                 upstream_repo = upstream_user.get_repo(repository['name'])
                 upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
-                                          '{}:{}'.format(self.github_username, sp_key), True)
+                                          '{}:{}'.format(self.github_username, sp_key))
 
 
 def sort_by_timestamp(val):
