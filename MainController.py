@@ -2,9 +2,11 @@ import logging
 import os
 
 from github import Github
-from jira import JIRA
+from jira import JIRA, JIRAError
 
 import git as g
+from requests.exceptions import MissingSchema
+
 import JIRAUtils
 from GUI import GUI
 
@@ -47,14 +49,20 @@ class MainController:
         self.assignee = self.gui.assignee_input.get().strip()
 
         if self.assignee:
-            logging.info("Getting " + self.assignee + "'s SP cases for " + self.service_pack + "...")
+            self.gui.log_info("Getting " + self.assignee + "'s SP cases for " + self.service_pack + "...")
         else:
-            logging.info("Getting SP cases for " + self.service_pack + "...")
+            self.gui.log_info("Getting SP cases for " + self.service_pack + "...")
 
-        self.jira_connection = JIRA(server=self.jira_url, basic_auth=(self.jira_username, self.jira_password))
+        try:
+            self.gui.log_info("Connecting to JIRA...")
+            self.jira_connection = JIRA(server=self.jira_url, basic_auth=(self.jira_username, self.jira_password))
+        except (MissingSchema, JIRAError):
+            self.gui.log_error("Unable to connect to JIRA")
+            return
+
         sp_cases = JIRAUtils.get_sp_cases(self.jira_connection, self.service_pack, self.assignee)
         self.gui.update_sp_list(sp_cases)
-        logging.info(str(len(sp_cases)) + " SP cases added.")
+        self.gui.log_info(str(len(sp_cases)) + " SP cases added.")
 
     def backport(self):
         self.gui.clear_logs()
@@ -65,22 +73,22 @@ class MainController:
 
         # Go through all SP cases
         sp_keys = [sp.split(' ')[0].replace('[', '').replace(']', '') for sp in self.gui.backports_listbox.get()]
-        logging.info("Starting to Backport...")
+        self.gui.log_info("Starting to Backport...")
 
         for sp_key in sp_keys:
-            logging.info("Backporting " + sp_key + "!")
+            self.gui.log_info("Backporting " + sp_key + "!")
             raw_data = JIRAUtils.get_data(self.jira_connection, sp_key)
             repositories = raw_data['detail'][0]['repositories']
 
             for repository in repositories:
-                logging.info("Creating the " + sp_key + " branch in " + repository['name'] + ".")
+                self.gui.log_info("Creating the " + sp_key + " branch in " + repository['name'] + ".")
 
                 # Verify repository path.
                 repo_path = self.base_folder + repository['name']
                 if os.path.exists(repo_path):
                     repo = g.Repo.init(repo_path)
                 else:
-                    logging.error("Couldn't find repository in " + repo_path)
+                    self.gui.log_error("Couldn't find repository in " + repo_path)
                     continue
 
                 # Create SP branch.
@@ -91,7 +99,7 @@ class MainController:
                 try:
                     git.checkout('-b', sp_key)
                 except g.GitCommandError as gce:
-                    logging.error("Failed to create branch: " + gce.stderr.strip())
+                    self.gui.log_error("Failed to create branch: " + gce.stderr.strip())
                     continue
 
                 # Cherry-Pick commits.
@@ -103,7 +111,7 @@ class MainController:
                     if commit['message'].startswith("[" + base_bug.key + "]"):
                         # Cherry-pick base case commits.
                         sha = commit['id']
-                        logging.info("Cherry-picking " + sha + ".")
+                        self.gui.log_info("Cherry-picking " + sha + ".")
                         git.cherry_pick(sha)
                         # Rename commits with backport message.
                         commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary

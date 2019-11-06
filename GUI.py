@@ -105,6 +105,14 @@ class GUI:
         self.config_logging()
         logging.info("Hello! Let's do some Backports!")
 
+    def log_info(self, message):
+        logging.info(message)
+        self.log_text.update()
+
+    def log_error(self, message):
+        logging.error(message)
+        self.log_text.update()
+
     def clear_logs(self):
         self.log_text = ScrolledText(self.window, state='disabled')
         self.log_text.configure(font='TkFixedFont')
