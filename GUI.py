@@ -147,6 +147,13 @@ class GUI:
             for item in new_items:
                 self.backports_listbox.insert(tk.END, item)
 
+    def remove_backports(self):
+        selected = self.backports_listbox.getcurselection()
+        if selected:
+            for item in selected:
+                idx = self.backports_listbox.get(0, tk.END).index(item)
+                self.backports_listbox.delete(idx)
+
     def clear_backports(self):
         self.backports_listbox.clear()
 
@@ -221,6 +228,9 @@ class GUI:
         sps_listbox.grid(row=1, column=1, rowspan=18)
 
         copy_button = tk.Button(parent, text=">>>", command=self.add_backports)
+        copy_button.grid(row=7, column=2)
+
+        copy_button = tk.Button(parent, text="<<<", command=self.remove_backports)
         copy_button.grid(row=8, column=2)
 
         clear_button = tk.Button(parent, text="Clear", command=self.clear_backports)
