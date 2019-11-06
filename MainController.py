@@ -1,6 +1,7 @@
 import logging
 import os
 
+import github
 from github import Github
 from jira import JIRA, JIRAError
 
@@ -114,6 +115,7 @@ class MainController:
                 urls = []
                 # Order commits by creation date.
                 commits.sort(key=sort_by_timestamp)
+                commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary
                 for commit in commits:
                     if commit['message'].startswith("[" + base_bug.key + "]"):
                         # Cherry-pick base case commits.
@@ -126,8 +128,8 @@ class MainController:
                             self.gui.log_error("Unable to cherry-pick '" + sha + "': " + gce.stderr.strip())
                             continue
                         # Rename commits with backport message.
-                        commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary
                         git.commit('--amend', '-m', commit_message)
+
                 # Push commits to origin's SP branch.
                 try:
                     git.push("origin", sp_key)
@@ -141,7 +143,14 @@ class MainController:
                 pr_message = "Merge Masters: " + self.master1 + " and " + self.master2 + "\n"
                 pr_message += "Cherry-picks:\n"
                 for url in urls:
-                    pr_message += "\t" + url + "\n"
+                    pr_message += "\t- " + url + "\n"
+
+                # Build and send Pull Request.
+                upstream_user = github.get_user(self.github_username)
+                upstream_repo = upstream_user.get_repo(repository['name'])
+                upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
+                                          '{}:{}'.format(self.github_username, sp_key), True)
+
 
 def sort_by_timestamp(val):
     return val['authorTimestamp']
