@@ -30,6 +30,11 @@ class MainController:
         self.assignee = None
         self.base_folder = None
 
+        # - - - - - - - - - - - - - - - - - - - - -
+        # Merge Masters
+        self.master1 = None
+        self.master2 = None
+
         self.jira_connection = None
         self.github_connection = None
         self.backports = None
@@ -66,10 +71,14 @@ class MainController:
 
     def backport(self):
         self.gui.clear_logs()
+
         self.github_username = self.gui.github_user_input.get().strip()
         self.github_password = self.gui.github_password_input.get()
         self.github_connection = Github(self.github_username, self.github_password)
         self.base_folder = self.gui.base_folder_input.get().strip()
+
+        self.master1 = self.gui.master1_input.get()
+        self.master2 = self.gui.master2_input.get()
 
         # Go through all SP cases
         sp_keys = [sp.split(' ')[0].replace('[', '').replace(']', '') for sp in self.gui.backports_listbox.get()]
@@ -112,7 +121,11 @@ class MainController:
                         # Cherry-pick base case commits.
                         sha = commit['id']
                         self.gui.log_info("Cherry-picking " + sha + ".")
-                        git.cherry_pick(sha)
+                        try:
+                            git.cherry_pick(sha)
+                        except g.GitCommandError as gce:
+                            self.gui.log_error("Unable to cherry-pick '" + sha + "': " + gce.stderr.strip())
+                            continue
                         # Rename commits with backport message.
                         commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary
                         git.commit('--amend', '-m', commit_message)

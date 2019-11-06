@@ -29,6 +29,11 @@ class GUI:
         self.base_folder_label = None
         self.base_folder_input = None
 
+        self.master1_label = None
+        self.master1_input = None
+        self.master2_label = None
+        self.master2_input = None
+
         self.sps_listbox = None
         self.copy_button = None
         self.clear_button = None
@@ -78,9 +83,19 @@ class GUI:
             backport_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
+        # Merge Masters Fields
+        backport_label = ttk.Label(self.window, text="Merge Masters")
+        backport_label.grid(row=7, column=1, sticky=tk.W, pady=3)
+
+        backport_frame = ttk.Frame(self.window)
+        backport_frame.grid(row=8, column=1, sticky=tk.E + tk.W + tk.N + tk.S, padx=30, pady=4)
+        self.master1_label, self.master1_input, self.master2_label, self.master2_input = self.create_merge_master_fields(
+            backport_frame)
+
+        # - - - - - - - - - - - - - - - - - - - - -
         # Get SP Cases
         do_btn = ttk.Button(self.window, text="Get Cases!", command=self.controller.get_sp_cases)
-        do_btn.grid(row=7, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        do_btn.grid(row=9, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # SP Cases
@@ -88,20 +103,20 @@ class GUI:
         sp_cases_label.grid(row=1, column=2, sticky=tk.W, pady=3)
 
         self.sp_cases_frame = ttk.Frame(self.window)
-        self.sp_cases_frame.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=5)
+        self.sp_cases_frame.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=15)
 
         self.sps_listbox, self.copy_button, self.clear_button, self.backports_listbox = self.create_sp_cases_fields(self.sp_cases_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Do It
         do_btn = ttk.Button(self.window, text="Do It!", command=self.controller.backport)
-        do_btn.grid(row=7, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
+        do_btn.grid(row=9, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Logger Text Box
         self.log_text = ScrolledText(self.window, state='disabled')
         self.log_text.configure(font='TkFixedFont')
-        self.log_text.grid(row=8, column=1, columnspan=3, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.log_text.grid(row=10, column=1, columnspan=3, sticky=tk.E + tk.W + tk.N + tk.S)
         self.config_logging()
         logging.info("Hello! Let's do some Backports!")
 
@@ -116,7 +131,7 @@ class GUI:
     def clear_logs(self):
         self.log_text = ScrolledText(self.window, state='disabled')
         self.log_text.configure(font='TkFixedFont')
-        self.log_text.grid(row=8, column=1, columnspan=3, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.log_text.grid(row=10, column=1, columnspan=3, sticky=tk.E + tk.W + tk.N + tk.S)
         self.log_text.update()
         self.config_logging()
 
@@ -184,26 +199,39 @@ class GUI:
 
         return service_pack_label, service_pack_input, assignee_label, assignee_input, base_folder_label, base_folder_input
 
+    def create_merge_master_fields(self, parent):
+        master1_label = ttk.Label(parent, text="Master 1: ")
+        master1_label.grid(row=1, column=1)
+        master1_input = ttk.Entry(parent)
+        master1_input.grid(row=1, column=2)
+
+        master2_label = ttk.Label(parent, text="Master 2: ")
+        master2_label.grid(row=2, column=1)
+        master2_input = ttk.Entry(parent)
+        master2_input.grid(row=2, column=2)
+
+        return master1_label, master1_input, master2_label, master2_input
+
     def create_sp_cases_fields(self, parent):
         sps_listbox = Pmw.ScrolledListBox(parent,
-                                          listbox_height=12,
+                                          listbox_height=18,
                                           vscrollmode="static",
                                           listbox_selectmode=tk.EXTENDED,
                                           listbox_width=80)
-        sps_listbox.grid(row=1, column=1, rowspan=12)
+        sps_listbox.grid(row=1, column=1, rowspan=18)
 
         copy_button = tk.Button(parent, text=">>>", command=self.add_backports)
-        copy_button.grid(row=4, column=2)
+        copy_button.grid(row=8, column=2)
 
         clear_button = tk.Button(parent, text="Clear", command=self.clear_backports)
-        clear_button.grid(row=5, column=2)
+        clear_button.grid(row=9, column=2)
 
         backports_listbox = Pmw.ScrolledListBox(parent,
-                                                listbox_height=12,
+                                                listbox_height=18,
                                                 vscrollmode="static",
                                                 listbox_selectmode=tk.EXTENDED,
                                                 listbox_width=80)
-        backports_listbox.grid(row=1, column=3, rowspan=12)
+        backports_listbox.grid(row=1, column=3, rowspan=18)
 
         return sps_listbox, copy_button, clear_button, backports_listbox
 
