@@ -258,12 +258,19 @@ class TextHandler(logging.Handler):
         # Store a reference to the Text it will log to
         self.text = text
 
+        # Add Log Level colours.
+        self.text.tag_config('INFO', foreground='black')
+        self.text.tag_config('DEBUG', foreground='gray')
+        self.text.tag_config('WARNING', foreground='orange')
+        self.text.tag_config('ERROR', foreground='red')
+        self.text.tag_config('CRITICAL', foreground='red', underline=1)
+
     def emit(self, record):
         msg = self.format(record)
 
         def append():
             self.text.configure(state='normal')
-            self.text.insert(tk.END, msg + '\n')
+            self.text.insert(tk.END, msg + '\n', record.levelname)
             self.text.configure(state='disabled')
             # Autoscroll to the bottom
             self.text.yview(tk.END)
