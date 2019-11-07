@@ -54,43 +54,30 @@ class GUI:
 
         # - - - - - - - - - - - - - - - - - - - - -
         # JIRA Credentials
-        jira_label = ttk.Label(self.window, text="JIRA Credentials")
-        jira_label.grid(row=1, column=1, sticky=tk.W, pady=3)
-
-        jira_frame = ttk.Frame(self.window)
-        jira_frame.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S, padx=30, pady=4)
-        self.jira_url_label, self.jira_url_input, self.jira_user_label, self.jira_user_input, self.jira_password_label, self.jira_password_input = self.create_jira_credentials_fields(
-            jira_frame)
+        jira_frame = tk.LabelFrame(self.window, text="JIRA Credentials", padx=5, pady=5)
+        jira_frame.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.jira_url_label, self.jira_url_input, self.jira_user_label, self.jira_user_input, self.jira_password_label, self.jira_password_input = self.\
+            create_jira_credentials_fields(jira_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # GitHub Credentials
-        github_label = ttk.Label(self.window, text="GitHub Credentials")
-        github_label.grid(row=3, column=1, sticky=tk.W, pady=3)
-
-        github_frame = ttk.Frame(self.window)
-        github_frame.grid(row=4, column=1, sticky=tk.E + tk.W + tk.N + tk.S, padx=30, pady=4)
-        self.github_user_label, self.github_user_input, self.github_password_label, self.github_password_input = self.create_github_fields(
-            github_frame)
+        github_frame = tk.LabelFrame(self.window, text="GitHub Credentials", padx=5, pady=5)
+        github_frame.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.github_user_label, self.github_user_input, self.github_password_label, self.github_password_input = self.\
+            create_github_fields(github_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Backport Fields
-        backport_label = ttk.Label(self.window, text="Backport Fields")
-        backport_label.grid(row=5, column=1, sticky=tk.W, pady=3)
-
-        backport_frame = ttk.Frame(self.window)
-        backport_frame.grid(row=6, column=1, sticky=tk.E + tk.W + tk.N + tk.S, padx=30, pady=4)
-        self.service_pack_label, self.service_pack_input, self.assignee_label, self.assignee_input, self.base_folder_label, self.base_folder_input = self.create_backport_fields(
-            backport_frame)
-
+        backport_frame = tk.LabelFrame(self.window, text="Backport Fields", padx=5, pady=5)
+        backport_frame.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.service_pack_label, self.service_pack_input, self.assignee_label, self.assignee_input, self.base_folder_label, self.base_folder_input = self.\
+            create_backport_fields(backport_frame)
         # - - - - - - - - - - - - - - - - - - - - -
         # Merge Masters Fields
-        backport_label = ttk.Label(self.window, text="Merge Masters")
-        backport_label.grid(row=7, column=1, sticky=tk.W, pady=3)
-
-        backport_frame = ttk.Frame(self.window)
-        backport_frame.grid(row=8, column=1, sticky=tk.E + tk.W + tk.N + tk.S, padx=30, pady=4)
-        self.master1_label, self.master1_input, self.master2_label, self.master2_input = self.create_merge_master_fields(
-            backport_frame)
+        merge_master_frame = tk.LabelFrame(self.window, text="Merge Masters", padx=5, pady=5)
+        merge_master_frame.grid(row=4, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        self.master1_label, self.master1_input, self.master2_label, self.master2_input = self.\
+            create_merge_master_fields(merge_master_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Get SP Cases
@@ -99,13 +86,11 @@ class GUI:
 
         # - - - - - - - - - - - - - - - - - - - - -
         # SP Cases
-        sp_cases_label = ttk.Label(self.window, text="SP Cases")
-        sp_cases_label.grid(row=1, column=2, sticky=tk.W, pady=3)
+        sp_cases_frame = tk.LabelFrame(self.window, text="SP Cases", padx=5, pady=5)
+        sp_cases_frame.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=15)
 
-        self.sp_cases_frame = ttk.Frame(self.window)
-        self.sp_cases_frame.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=15)
-
-        self.sps_listbox, self.copy_button, self.clear_button, self.backports_listbox = self.create_sp_cases_fields(self.sp_cases_frame)
+        self.sps_listbox, self.copy_button, self.clear_button, self.backports_listbox = self.\
+            create_sp_cases_fields(sp_cases_frame)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Do It
