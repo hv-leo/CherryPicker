@@ -144,63 +144,63 @@ class GUI:
 
     def create_jira_credentials_fields(self, parent):
         url_label = ttk.Label(parent, text="URL: ")
-        url_label.grid(row=1, column=1)
+        url_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         url_input = ttk.Entry(parent)
-        url_input.grid(row=1, column=2)
+        url_input.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         user_label = ttk.Label(parent, text="Username: ")
-        user_label.grid(row=2, column=1)
+        user_label.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         user_input = ttk.Entry(parent)
-        user_input.grid(row=2, column=2)
+        user_input.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         password_label = ttk.Label(parent, text="Password: ")
-        password_label.grid(row=3, column=1)
+        password_label.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         password_input = ttk.Entry(parent, show="*")
-        password_input.grid(row=3, column=2)
+        password_input.grid(row=3, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         return url_label, url_input, user_label, user_input, password_label, password_input
 
     def create_github_fields(self, parent):
         user_label = ttk.Label(parent, text="Username: ")
-        user_label.grid(row=1, column=1)
+        user_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         user_input = ttk.Entry(parent)
-        user_input.grid(row=1, column=2)
+        user_input.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         password_label = ttk.Label(parent, text="Password: ")
-        password_label.grid(row=2, column=1)
+        password_label.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         password_input = ttk.Entry(parent, show="*")
-        password_input.grid(row=2, column=2)
+        password_input.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         return user_label, user_input, password_label, password_input
 
     def create_backport_fields(self, parent):
         service_pack_label = ttk.Label(parent, text="Service Pack: ")
-        service_pack_label.grid(row=1, column=1)
+        service_pack_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         service_pack_input = ttk.Entry(parent)
-        service_pack_input.grid(row=1, column=2)
+        service_pack_input.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         assignee_label = ttk.Label(parent, text="Assignee: ")
-        assignee_label.grid(row=2, column=1)
+        assignee_label.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         assignee_input = ttk.Entry(parent)
-        assignee_input.grid(row=2, column=2)
+        assignee_input.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         base_folder_label = ttk.Label(parent, text="Base Folder: ")
-        base_folder_label.grid(row=3, column=1)
+        base_folder_label.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         base_folder_input = ttk.Entry(parent)
-        base_folder_input.grid(row=3, column=2)
+        base_folder_input.grid(row=3, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         return service_pack_label, service_pack_input, assignee_label, assignee_input, base_folder_label, base_folder_input
 
     def create_merge_master_fields(self, parent):
         master1_label = ttk.Label(parent, text="Master 1: ")
-        master1_label.grid(row=1, column=1)
+        master1_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         master1_input = ttk.Entry(parent)
-        master1_input.grid(row=1, column=2)
+        master1_input.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         master2_label = ttk.Label(parent, text="Master 2: ")
-        master2_label.grid(row=2, column=1)
+        master2_label.grid(row=2, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         master2_input = ttk.Entry(parent)
-        master2_input.grid(row=2, column=2)
+        master2_input.grid(row=2, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
 
         return master1_label, master1_input, master2_label, master2_input
 
