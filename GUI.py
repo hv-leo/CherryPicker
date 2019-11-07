@@ -44,6 +44,7 @@ class GUI:
         self.logger = None
 
         self.window = tk.Tk()
+        self.window.state('zoomed')
         self.window.title("Tatooine Backporter")
         self.create_widgets()
 
@@ -90,7 +91,7 @@ class GUI:
         # - - - - - - - - - - - - - - - - - - - - -
         # SP Cases
         sp_cases_frame = tk.LabelFrame(self.window, text="SP Cases", padx=5, pady=5)
-        sp_cases_frame.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=15)
+        sp_cases_frame.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=9)
 
         self.sps_listbox, self.copy_button, self.clear_button, self.backports_listbox = self.\
             create_sp_cases_fields(sp_cases_frame)
@@ -215,7 +216,7 @@ class GUI:
         sps_listbox = Pmw.ScrolledListBox(parent,
                                           listbox_height=18,
                                           listbox_selectmode=tk.EXTENDED)
-        sps_listbox.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=18)
+        sps_listbox.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=9)
 
         copy_button = tk.Button(parent, text=">>>", command=self.add_backports)
         copy_button.grid(row=7, column=2)
@@ -229,7 +230,7 @@ class GUI:
         backports_listbox = Pmw.ScrolledListBox(parent,
                                                 listbox_height=18,
                                                 listbox_selectmode=tk.EXTENDED)
-        backports_listbox.grid(row=1, column=3, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=18)
+        backports_listbox.grid(row=1, column=3, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=9)
 
         return sps_listbox, copy_button, clear_button, backports_listbox
 
