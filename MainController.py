@@ -105,7 +105,7 @@ class MainController:
                 self.gui.log_info("Creating the " + sp_key + " branch in " + repository['name'] + ".")
 
                 # Verify repository path.
-                repo_path = self.base_folder + repository['name']
+                repo_path = os.path.join(os.path.normpath(self.base_folder), repository['name'])
                 if os.path.exists(repo_path):
                     repo = g.Repo.init(repo_path)
                 else:

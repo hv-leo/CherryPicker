@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from tkinter.scrolledtext import ScrolledText
 
 import Pmw
@@ -28,6 +28,7 @@ class GUI:
         self.assignee_input = None
         self.base_folder_label = None
         self.base_folder_input = None
+        self.base_folder_button = None
 
         self.master1_label = None
         self.master1_input = None
@@ -74,7 +75,7 @@ class GUI:
         # Backport Fields
         backport_frame = tk.LabelFrame(self.window, text="Backport Fields", padx=5, pady=5)
         backport_frame.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
-        self.service_pack_label, self.service_pack_input, self.assignee_label, self.assignee_input, self.base_folder_label, self.base_folder_input = self.\
+        self.service_pack_label, self.service_pack_input, self.assignee_label, self.assignee_input, self.base_folder_label, self.base_folder_input, self.base_folder_button = self.\
             create_backport_fields(backport_frame)
         # - - - - - - - - - - - - - - - - - - - - -
         # Merge Masters Fields
@@ -190,10 +191,14 @@ class GUI:
 
         base_folder_label = ttk.Label(parent, text="Base Folder: ")
         base_folder_label.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
-        base_folder_input = ttk.Entry(parent)
-        base_folder_input.grid(row=3, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
+        base_folder_frame = tk.Frame(parent)
+        base_folder_frame.grid(row=3, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
+        base_folder_input = ttk.Entry(base_folder_frame)
+        base_folder_input.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
+        base_folder_button = tk.Button(base_folder_frame, text="...", command=self.browse_button)
+        base_folder_button.grid(row=0, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
 
-        return service_pack_label, service_pack_input, assignee_label, assignee_input, base_folder_label, base_folder_input
+        return service_pack_label, service_pack_input, assignee_label, assignee_input, base_folder_label, base_folder_input, base_folder_button
 
     def create_merge_master_fields(self, parent):
         master1_label = ttk.Label(parent, text="Master 1: ")
@@ -246,6 +251,13 @@ class GUI:
         # Add the handler to logger
         self.logger = logging.getLogger()
         self.logger.addHandler(self.text_handler)
+
+    # Allow user to select a directory
+    def browse_button(self):
+        filename = filedialog.askdirectory()
+        self.base_folder_input.delete(0, tk.END)
+        self.base_folder_input.insert(0, filename)
+        self.base_folder_input.update()
 
 
 class TextHandler(logging.Handler):
