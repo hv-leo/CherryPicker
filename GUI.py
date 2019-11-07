@@ -52,6 +52,9 @@ class GUI:
         self.window['padx'] = 5
         self.window['pady'] = 5
 
+        self.window.grid_columnconfigure(1, weight=1)
+        self.window.grid_columnconfigure(2, weight=70)
+
         # - - - - - - - - - - - - - - - - - - - - -
         # JIRA Credentials
         jira_frame = tk.LabelFrame(self.window, text="JIRA Credentials", padx=5, pady=5)
@@ -205,12 +208,14 @@ class GUI:
         return master1_label, master1_input, master2_label, master2_input
 
     def create_sp_cases_fields(self, parent):
+        parent.grid_columnconfigure(1, weight=50)
+        parent.grid_columnconfigure(2, weight=1)
+        parent.grid_columnconfigure(3, weight=50)
+
         sps_listbox = Pmw.ScrolledListBox(parent,
                                           listbox_height=18,
-                                          vscrollmode="static",
-                                          listbox_selectmode=tk.EXTENDED,
-                                          listbox_width=80)
-        sps_listbox.grid(row=1, column=1, rowspan=18)
+                                          listbox_selectmode=tk.EXTENDED)
+        sps_listbox.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=18)
 
         copy_button = tk.Button(parent, text=">>>", command=self.add_backports)
         copy_button.grid(row=7, column=2)
@@ -223,10 +228,8 @@ class GUI:
 
         backports_listbox = Pmw.ScrolledListBox(parent,
                                                 listbox_height=18,
-                                                vscrollmode="static",
-                                                listbox_selectmode=tk.EXTENDED,
-                                                listbox_width=80)
-        backports_listbox.grid(row=1, column=3, rowspan=18)
+                                                listbox_selectmode=tk.EXTENDED)
+        backports_listbox.grid(row=1, column=3, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=18)
 
         return sps_listbox, copy_button, clear_button, backports_listbox
 
