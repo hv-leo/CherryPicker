@@ -147,7 +147,7 @@ class GUI:
         self.backports_listbox.clear()
 
     def create_jira_credentials_fields(self, parent):
-        url_label = ttk.Label(parent, text="URL: ")
+        url_label = ttk.Label(parent, text="JIRA URL: ")
         url_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         url_input = ttk.Entry(parent)
         url_input.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
