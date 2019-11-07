@@ -78,17 +78,23 @@ class MainController:
 
     def backport(self):
         self.gui.clear_logs()
+        self.gui.log_info("Starting to Backport...")
 
         # Connect to GitHub.
         self.github_username = self.gui.github_user_input.get().strip()
         self.github_password = self.gui.github_password_input.get()
         self.github_connection = Github(self.github_username, self.github_password)
+        try:
+            upstream_user = self.github_connection.get_user('pentaho')
+        except GithubException as ge:
+            self.gui.log_error("Unable to connect to GitHub: " + ge.data['message'])
+            self.gui.log_info("Done!")
+            return
 
         self.base_folder = self.gui.base_folder_input.get().strip()
 
         # Go through all SP cases
         sp_keys = [sp.split(' ')[0].replace('[', '').replace(']', '') for sp in self.gui.backports_listbox.get()]
-        self.gui.log_info("Starting to Backport...")
 
         for sp_key in sp_keys:
             self.gui.log_info("Backporting " + sp_key + "!")
@@ -156,7 +162,6 @@ class MainController:
 
                 # Build and send Pull Request.
                 self.gui.log_info("Opening PR for " + sp_key + ".")
-                upstream_user = self.github_connection.get_user('pentaho')
                 upstream_repo = upstream_user.get_repo(repository['name'])
                 try:
                     upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
