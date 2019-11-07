@@ -60,11 +60,19 @@ class MainController:
         try:
             self.gui.log_info("Connecting to JIRA...")
             self.jira_connection = JIRA(server=self.jira_url, basic_auth=(self.jira_username, self.jira_password))
-        except (MissingSchema, JIRAError):
-            self.gui.log_error("Unable to connect to JIRA")
+        except MissingSchema as me:
+            self.gui.log_error("Unable to connect to JIRA: " + str(me))
+            return
+        except JIRAError as je:
+            self.gui.log_error("Unable to connect to JIRA: " + je.text)
             return
 
-        sp_cases = JIRAUtils.get_sp_cases(self.jira_connection, self.service_pack, self.assignee)
+        try:
+            sp_cases = JIRAUtils.get_sp_cases(self.jira_connection, self.service_pack, self.assignee)
+        except JIRAError as je:
+            self.gui.log_error("Unable to fetch SP Cases: " + je.text)
+            return
+
         self.gui.update_sp_list(sp_cases)
         self.gui.log_info(str(len(sp_cases)) + " SP cases added.")
 
