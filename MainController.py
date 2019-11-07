@@ -1,6 +1,6 @@
 import os
 
-from github import Github
+from github import Github, GithubException
 from jira import JIRA, JIRAError
 
 import git as g
@@ -158,9 +158,15 @@ class MainController:
                 self.gui.log_info("Opening PR for " + sp_key + ".")
                 upstream_user = self.github_connection.get_user('pentaho')
                 upstream_repo = upstream_user.get_repo(repository['name'])
-                upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
+                try:
+                    upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
                                           '{}:{}'.format(self.github_username, sp_key), True)
-                self.gui.log_info("Done!")
+                except GithubException as ge:
+                    self.gui.log_error("Unable submit PR for " + sp_key + ": " + ge.data['errors'][0]['message'])
+                # Move to next repository.
+                self.gui.log_info("Done with " + repository['name'] + "!")
+            # Move to next SP case.
+            self.gui.log_info("Done with " + sp_key + "!")
 
 
 def sort_by_timestamp(val):
