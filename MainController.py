@@ -162,7 +162,7 @@ class MainController:
                     upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
                                           '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
-                    self.gui.log_error("Unable submit PR for " + sp_key + ": " + ge.data['errors'][0]['message'])
+                    self.gui.log_error("Unable to submit PR for " + sp_key + ": " + ge.data['errors'][0]['message'])
                 # Move to next repository.
                 self.gui.log_info("Done with " + repository['name'] + "!")
             # Move to next SP case.
