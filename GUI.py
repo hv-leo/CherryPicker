@@ -219,13 +219,13 @@ class GUI:
         sps_listbox.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=9)
 
         copy_button = tk.Button(parent, text=">>>", command=self.add_backports)
-        copy_button.grid(row=7, column=2)
+        copy_button.grid(row=4, column=2)
 
         copy_button = tk.Button(parent, text="<<<", command=self.remove_backports)
-        copy_button.grid(row=8, column=2)
+        copy_button.grid(row=5, column=2)
 
         clear_button = tk.Button(parent, text="Clear", command=self.clear_backports)
-        clear_button.grid(row=9, column=2)
+        clear_button.grid(row=6, column=2)
 
         backports_listbox = Pmw.ScrolledListBox(parent,
                                                 listbox_height=18,
