@@ -148,6 +148,9 @@ class GUI:
         self.backports_listbox.clear()
 
     def create_jira_credentials_fields(self, parent):
+        parent.grid_columnconfigure(1, weight=1)
+        parent.grid_columnconfigure(2, weight=70)
+
         url_label = ttk.Label(parent, text="JIRA URL: ")
         url_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         url_input = ttk.Entry(parent)
@@ -166,6 +169,9 @@ class GUI:
         return url_label, url_input, user_label, user_input, password_label, password_input
 
     def create_github_fields(self, parent):
+        parent.grid_columnconfigure(1, weight=1)
+        parent.grid_columnconfigure(2, weight=70)
+
         user_label = ttk.Label(parent, text="Username: ")
         user_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         user_input = ttk.Entry(parent)
@@ -179,6 +185,9 @@ class GUI:
         return user_label, user_input, password_label, password_input
 
     def create_backport_fields(self, parent):
+        parent.grid_columnconfigure(1, weight=1)
+        parent.grid_columnconfigure(2, weight=70)
+
         service_pack_label = ttk.Label(parent, text="Service Pack: ")
         service_pack_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         service_pack_input = ttk.Entry(parent)
@@ -193,6 +202,8 @@ class GUI:
         base_folder_label.grid(row=3, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         base_folder_frame = tk.Frame(parent)
         base_folder_frame.grid(row=3, column=2, sticky=tk.E + tk.W + tk.N + tk.S)
+        base_folder_frame.grid_columnconfigure(1, weight=70)
+        base_folder_frame.grid_columnconfigure(2, weight=1)
         base_folder_input = ttk.Entry(base_folder_frame)
         base_folder_input.grid(row=0, column=0, sticky=tk.E + tk.W + tk.N + tk.S)
         base_folder_button = tk.Button(base_folder_frame, text="...", command=self.browse_button)
@@ -201,6 +212,9 @@ class GUI:
         return service_pack_label, service_pack_input, assignee_label, assignee_input, base_folder_label, base_folder_input, base_folder_button
 
     def create_merge_master_fields(self, parent):
+        parent.grid_columnconfigure(1, weight=1)
+        parent.grid_columnconfigure(2, weight=70)
+
         master1_label = ttk.Label(parent, text="Master 1: ")
         master1_label.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
         master1_input = ttk.Entry(parent)

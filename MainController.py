@@ -115,6 +115,7 @@ class MainController:
                 # Create SP branch.
                 git = repo.git
                 base_version_branch = self.service_pack.split('-')[1].split(' ')[0]
+                sp_version_branch = self.service_pack.split(' ')[1].replace('(', '').replace(')', '')
                 git.checkout(base_version_branch)
                 git.pull('upstream', base_version_branch)
                 try:
@@ -163,11 +164,23 @@ class MainController:
                 # Build and send Pull Request.
                 self.gui.log_info("Opening PR for " + sp_key + ".")
                 upstream_repo = upstream_user.get_repo(repository['name'])
+
+                # For base version branch
                 try:
                     upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
-                                          '{}:{}'.format(self.github_username, sp_key), True)
+                                              '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
-                    self.gui.log_error("Unable to submit PR for " + sp_key + ": " + ge.data['errors'][0]['message'])
+                    self.gui.log_error("Unable to submit PR for " + sp_key + " in " + base_version_branch + "branch: " +
+                                       ge.data['errors'][0]['message'])
+
+                # For SP branch
+                try:
+                    upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
+                                              '{}:{}'.format(self.github_username, sp_key), True)
+                except GithubException as ge:
+                    self.gui.log_error("Unable to submit PR for " + sp_key + " in " + sp_version_branch + "branch: " +
+                                       ge.data['errors'][0]['message'])
+
                 # Move to next repository.
                 self.gui.log_info("Done with " + repository['name'] + "!")
             # Move to next SP case.
