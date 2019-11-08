@@ -167,22 +167,41 @@ class MainController:
 
                 # For base version branch
                 try:
+                    upstream_repo.get_branch(base_version_branch)
                     upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
                                               '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
-                    self.gui.log_error("Unable to submit PR for " + sp_key + " in " + base_version_branch + "branch: " +
-                                       ge.data['errors'][0]['message'])
+                    if ge.status == 422:
+                        self.gui.log_error(
+                            "Unable to submit PR for " + sp_key + " in " + base_version_branch + " branch: " +
+                            ge.data['errors'][0]['message'])
+                    else:
+                        self.gui.log_error(
+                            "Unable to submit PR for " + sp_key + " in " + base_version_branch + " branch: " +
+                            ge.data['message'])
 
                 # For SP branch
                 try:
+                    upstream_repo.get_branch(sp_version_branch)
                     upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
                                               '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
-                    self.gui.log_error("Unable to submit PR for " + sp_key + " in " + sp_version_branch + "branch: " +
-                                       ge.data['errors'][0]['message'])
+                    if ge.status == 422:
+                        self.gui.log_error(
+                            "Unable to submit PR for " + sp_key + " in " + sp_version_branch + " branch: " +
+                            ge.data['errors'][0]['message'])
+                    else:
+                        self.gui.log_warn(
+                            "Unable to submit PR for " + sp_key + " in " + sp_version_branch + " branch: " +
+                            ge.data['message'])
 
-                # Move to next repository.
+                # Delete branch and Move to next repository.
+                self.gui.log_info("Deleting " + sp_key + " branch...")
+                git.push("origin", '--delete', sp_key)
+                git.checkout('master')
+                git.branch("-D", sp_key)
                 self.gui.log_info("Done with " + repository['name'] + "!")
+
             # Move to next SP case.
             self.gui.log_info("Done with " + sp_key + "!")
 

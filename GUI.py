@@ -118,6 +118,10 @@ class GUI:
         logging.error(message)
         self.log_text.update()
 
+    def log_warn(self, message):
+        logging.warning(message)
+        self.log_text.update()
+
     def clear_logs(self):
         self.log_text = ScrolledText(self.window, state='disabled')
         self.log_text.configure(font='TkFixedFont')
