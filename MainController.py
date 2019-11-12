@@ -229,6 +229,10 @@ class MainController:
             if version_pr:
                 jira_comment += "\n** " + base_version_branch + ": " + version_pr.html_url
 
+            # Add pull-request-sent label
+            issue.fields.labels.append(u"pull-request-sent")
+            issue.update(fields={"labels": issue.fields.labels})
+
             # Move issue to block status
             self.jira_connection.transition_issue(sp_key, '61', comment=jira_comment)
 
