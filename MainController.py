@@ -168,11 +168,14 @@ class MainController:
                 pr_message = "Merge Masters: " + self.master1 + " and " + self.master2 + "\n"
                 pr_message += "Cherry-picks:\n"
                 for url in urls:
-                    pr_message += "\t* " + url + "\n"
+                    pr_message += "* " + url + "\n"
 
                 # Build and send Pull Request.
                 self.gui.log_info("Opening PRs for " + sp_key + ".")
-                upstream_repo = upstream_user.get_repo(repository['name'])
+                try:
+                    upstream_repo = upstream_user.get_repo(repository['name'])
+                except GithubException:
+                    upstream_repo = self.github_connection.get_user('webdetails').get_repo(repository['name'])
 
                 # For base version branch
                 try:
@@ -219,7 +222,7 @@ class MainController:
 
             # Add PR links in the JIRA case
             self.gui.log_info("Adding PR links in " + sp_key + "...")
-            jira_comment += "\n*" + repository['name'] + ":"
+            jira_comment += "\n* " + repository['name'] + ":"
             if base_pr:
                 jira_comment += "\n** " + sp_version_branch + ": " + base_pr.html_url
 

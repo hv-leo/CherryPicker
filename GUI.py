@@ -91,7 +91,7 @@ class GUI:
 
         # - - - - - - - - - - - - - - - - - - - - -
         # SP Cases
-        sp_cases_frame = tk.LabelFrame(self.window, text="SP Cases", padx=5, pady=5)
+        sp_cases_frame = tk.LabelFrame(self.window, text="SP Cases to be backported", padx=5, pady=5)
         sp_cases_frame.grid(row=1, column=2, sticky=tk.E + tk.W + tk.N + tk.S, rowspan=9)
 
         self.sps_listbox, self.copy_button, self.clear_button, self.backports_listbox = self.\
