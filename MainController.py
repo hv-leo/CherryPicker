@@ -168,10 +168,10 @@ class MainController:
                 pr_message = "Merge Masters: " + self.master1 + " and " + self.master2 + "\n"
                 pr_message += "Cherry-picks:\n"
                 for url in urls:
-                    pr_message += "\t- " + url + "\n"
+                    pr_message += "\t* " + url + "\n"
 
                 # Build and send Pull Request.
-                self.gui.log_info("Opening PR for " + sp_key + ".")
+                self.gui.log_info("Opening PRs for " + sp_key + ".")
                 upstream_repo = upstream_user.get_repo(repository['name'])
 
                 # For base version branch
@@ -179,6 +179,7 @@ class MainController:
                     upstream_repo.get_branch(base_version_branch)
                     base_pr = upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
                                                         '{}:{}'.format(self.github_username, sp_key), True)
+                    base_pr
                 except GithubException as ge:
                     if ge.status == 422:
                         self.gui.log_error(
@@ -188,12 +189,15 @@ class MainController:
                         self.gui.log_error(
                             "Unable to submit PR for " + sp_key + " in " + base_version_branch + " branch: " +
                             ge.data['message'])
+                else:
+                    self.gui.log_info("Opened Pull Request in " + base_version_branch + " branch")
 
                 # For SP branch
                 try:
                     upstream_repo.get_branch(sp_version_branch)
                     version_pr = upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
                                                            '{}:{}'.format(self.github_username, sp_key), True)
+                    version_pr
                 except GithubException as ge:
                     if ge.status == 422:
                         self.gui.log_error(
@@ -203,27 +207,27 @@ class MainController:
                         self.gui.log_warn(
                             "Unable to submit PR for " + sp_key + " in " + sp_version_branch + " branch: " +
                             ge.data['message'])
+                else:
+                    self.gui.log_info("Opened Pull Request in " + sp_version_branch + " branch")
 
                 # Delete branch and Move to next repository.
                 self.gui.log_info("Deleting " + sp_key + " branch...")
-                git.push("origin", '--delete', sp_key)
+                # git.push("origin", '--delete', sp_key)
                 git.checkout('master')
                 git.branch("-D", sp_key)
                 self.gui.log_info("Done with " + repository['name'] + "!")
 
             # Add PR links in the JIRA case
             self.gui.log_info("Adding PR links in " + sp_key + "...")
-            jira_comment += "\n  - " + repository['name'] + ":"
+            jira_comment += "\n*" + repository['name'] + ":"
             if base_pr:
-                jira_comment += "\n    - " + sp_version_branch + ": " + base_pr.url
+                jira_comment += "\n** " + sp_version_branch + ": " + base_pr.html_url
 
             if version_pr:
-                jira_comment += "\n    - " + base_version_branch + ": " + version_pr.url
-            self.jira_connection.add_comment(sp_key, jira_comment)
-            # Add PR Sent label
-            self.jira_connection.add_label(sp_key, 'pull-request-sent')
+                jira_comment += "\n** " + base_version_branch + ": " + version_pr.html_url
+
             # Move issue to block status
-            self.jira_connection.transition_issue(sp_key, '61')
+            self.jira_connection.transition_issue(sp_key, '61', comment=jira_comment)
 
             # Move to next SP case.
             self.gui.log_info("Done with " + sp_key + "!")
