@@ -130,6 +130,7 @@ class GUI:
         self.config_logging()
 
     def update_sp_list(self, sp_cases):
+        self.sps_listbox.clear()
         for sp_case in sp_cases:
             self.sps_listbox.insert(tk.END, sp_case)
 
