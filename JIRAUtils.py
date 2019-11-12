@@ -5,9 +5,11 @@ import json
 # If there is, return assignee's SP cases for the Service Pack.
 def get_sp_cases(jira, service_pack, assignee):
     if assignee:
-        sps = jira.search_issues('fixVersion="' + service_pack + '" and assignee="' + assignee + '"')
+        sps = jira.search_issues('fixVersion="' + service_pack + '" and assignee="' + assignee +
+                                 '" and (status="Open" or status="In Progress")')
     else:
-        sps = jira.search_issues('fixVersion="' + service_pack + '"')
+        sps = jira.search_issues('fixVersion="' + service_pack +
+                                 '" and (status="Open" or status="In Progress")')
     return ["[" + sp.key + "] " + sp.fields.summary for sp in sps]
 
 

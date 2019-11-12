@@ -97,9 +97,18 @@ class MainController:
         sp_keys = [sp.split(' ')[0].replace('[', '').replace(']', '') for sp in self.gui.backports_listbox.get()]
 
         for sp_key in sp_keys:
+            # Put JIRA case In Progress
+            issue = self.jira_connection.issue(sp_key)
+            self.jira_connection.assign_issue(issue, self.jira_username)
+            if issue.fields.status.name == 'Open':
+                self.jira_connection.transition_issue(issue.key, '11')
+
             self.gui.log_info("Backporting " + sp_key + "!")
             raw_data = JIRAUtils.get_data(self.jira_connection, sp_key)
             repositories = raw_data['detail'][0]['repositories']
+
+            base_pr = version_pr = None
+            jira_comment = "PRs:"
 
             for repository in repositories:
                 self.gui.log_info("Creating the " + sp_key + " branch in " + repository['name'] + ".")
@@ -168,8 +177,8 @@ class MainController:
                 # For base version branch
                 try:
                     upstream_repo.get_branch(base_version_branch)
-                    upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
-                                              '{}:{}'.format(self.github_username, sp_key), True)
+                    base_pr = upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
+                                                        '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
                     if ge.status == 422:
                         self.gui.log_error(
@@ -183,8 +192,8 @@ class MainController:
                 # For SP branch
                 try:
                     upstream_repo.get_branch(sp_version_branch)
-                    upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
-                                              '{}:{}'.format(self.github_username, sp_key), True)
+                    version_pr = upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
+                                                           '{}:{}'.format(self.github_username, sp_key), True)
                 except GithubException as ge:
                     if ge.status == 422:
                         self.gui.log_error(
@@ -201,6 +210,20 @@ class MainController:
                 git.checkout('master')
                 git.branch("-D", sp_key)
                 self.gui.log_info("Done with " + repository['name'] + "!")
+
+            # Add PR links in the JIRA case
+            self.gui.log_info("Adding PR links in " + sp_key + "...")
+            jira_comment += "\n  - " + repository['name'] + ":"
+            if base_pr:
+                jira_comment += "\n    - " + sp_version_branch + ": " + base_pr.url
+
+            if version_pr:
+                jira_comment += "\n    - " + base_version_branch + ": " + version_pr.url
+            self.jira_connection.add_comment(sp_key, jira_comment)
+            # Add PR Sent label
+            self.jira_connection.add_label(sp_key, 'pull-request-sent')
+            # Move issue to block status
+            self.jira_connection.transition_issue(sp_key, '61')
 
             # Move to next SP case.
             self.gui.log_info("Done with " + sp_key + "!")
