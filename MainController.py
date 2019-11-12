@@ -126,7 +126,10 @@ class MainController:
                 base_version_branch = self.service_pack.split('-')[1].split(' ')[0]
                 sp_version_branch = self.service_pack.split(' ')[1].replace('(', '').replace(')', '')
                 git.fetch('--all')
-                git.checkout(base_version_branch)
+                try:
+                    git.checkout('-b', base_version_branch, 'origin/' + base_version_branch)
+                except g.GitCommandError as gce:
+                    git.checkout(base_version_branch)
                 git.pull('upstream', base_version_branch)
                 try:
                     git.checkout('-b', sp_key)
@@ -221,14 +224,14 @@ class MainController:
                 git.branch("-D", sp_key)
                 self.gui.log_info("Done with " + repository['name'] + "!")
 
-            # Add PR links in the JIRA case
-            self.gui.log_info("Adding PR links in " + sp_key + "...")
-            jira_comment += "\n* " + repository['name'] + ":"
-            if base_pr:
-                jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
+                # Add PR links in the JIRA case
+                self.gui.log_info("Adding PR links in " + sp_key + "...")
+                jira_comment += "\n* " + repository['name'] + ":"
+                if base_pr:
+                    jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
 
-            if version_pr:
-                jira_comment += "\n** " + sp_version_branch + ": " + version_pr.html_url
+                if version_pr:
+                    jira_comment += "\n** " + sp_version_branch + ": " + version_pr.html_url
 
             # Add pull-request-sent label
             issue.fields.labels.append(u"pull-request-sent")
