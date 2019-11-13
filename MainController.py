@@ -1,4 +1,6 @@
+import json
 import os
+import re
 
 from github import Github, GithubException
 from jira import JIRA, JIRAError
@@ -109,6 +111,51 @@ class MainController:
 
             base_pr = version_pr = None
             jira_comment = "PRs:"
+            base_bug = JIRAUtils.get_base_bug(self.jira_connection, sp_key)
+            jira_comments = [[re.search(r'(?<=PR:).*', body).group(0) for body in
+                              comment.body.encode("ascii", errors="ignore").decode().replace("\r\n", "\n").replace("\r", "\n").split('\n') if
+                              re.search(r'(?<=PR:).*', body) is not None] for comment in
+                             self.jira_connection.issue(base_bug.key).fields.comment.comments]
+            links_in_comments = [item for sublist in jira_comments for item in sublist]
+            rep_names = [rep['name'] for rep in repositories]
+
+            for rep_name in rep_names:
+                for not_missing_link in links_in_comments:
+                    # Commits are on JIRA Developer Plugin.
+                    if rep_name in not_missing_link:
+                        break
+
+                    # Commits are missing
+                    try:
+                        upstream_repo = upstream_user.get_repo(rep_name)
+                    except GithubException:
+                        upstream_repo = self.github_connection.get_user('webdetails').get_repo(rep_name)
+                    pr = upstream_repo.get_pull(not_missing_link.split('/')[-1])
+                    for commit in pr.get_commits().get_page(0):
+                        rep_name = commit.html_url.split('/')[4]
+                        sha = commit.html_url.split('/')[-1]
+                        repositories.append({'name': rep_name,
+                                             'commits': [
+                                                 {'message': "Missing Commit", 'id': sha, 'url': commit.html_url,
+                                                  'authorTimestamp': 1}]})
+            if not rep_names:
+                for missing_link in links_in_comments:
+                    # All commits are missing
+                    rep_name = missing_link.split('/')[-3]
+                    pr_nr = missing_link.split('/')[-1]
+                    pr_nr = int(''.join([i for i in pr_nr if i.isdigit()]))
+                    try:
+                        upstream_repo = upstream_user.get_repo(rep_name)
+                    except GithubException:
+                        upstream_repo = self.github_connection.get_user('webdetails').get_repo(rep_name)
+                    pr = upstream_repo.get_pull(pr_nr)
+                    for commit in pr.get_commits().get_page(0):
+                        rep_name = commit.html_url.split('/')[4]
+                        sha = commit.html_url.split('/')[-1]
+                        repositories.append({'name': rep_name,
+                                             'commits': [
+                                                 {'message': "Missing Commit", 'id': sha, 'url': commit.html_url,
+                                                  'authorTimestamp': 1}]})
 
             for repository in repositories:
                 self.gui.log_info("Creating the " + sp_key + " branch in " + repository['name'] + ".")
@@ -138,14 +185,16 @@ class MainController:
                     continue
 
                 # Cherry-Pick commits.
-                base_bug = JIRAUtils.get_base_bug(self.jira_connection, sp_key)
                 commits = repository['commits']
                 urls = []
                 # Order commits by creation date.
-                commits.sort(key=sort_by_timestamp)
+                try:
+                    commits.sort(key=sort_by_timestamp)
+                except AttributeError:
+                    pass
                 commit_message = '[' + sp_key + '] ' + self.jira_connection.issue(sp_key).fields.summary
                 for commit in commits:
-                    if commit['message'].startswith("[" + base_bug.key + "]"):
+                    if not commit['message'].startswith("Merge pull request"):
                         # Cherry-pick base case commits.
                         sha = commit['id']
                         urls.append(commit['url'])
