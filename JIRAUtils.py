@@ -21,7 +21,7 @@ def get_data(jira, base_bug):
     if base_bug_raw_data['detail'][0]['repositories']:
         return base_bug_raw_data
     else:
-        # If not, check if there is an original Backlog with commits.
+        # If not, check if there is a Backlog with commits.
         backlog = [clone for clone in base_bug.fields.issuelinks if
                    clone.type.name == 'Cloners' and hasattr(clone, 'inwardIssue') and clone.inwardIssue.key.startswith(
                        "BACKLOG")]
