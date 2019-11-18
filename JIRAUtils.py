@@ -15,11 +15,26 @@ def get_sp_cases(jira, service_pack, assignee):
 
 # Get base case development data.
 # I had to hijack the JIRA session, since we don't have this feature on JIRA API.
-def get_data(jira, sp_key):
-    # Get base case commits:
-    base_bug = get_base_bug(jira, sp_key)
+def get_data(jira, base_bug):
+    base_bug_raw_data = __get_data(jira, base_bug.id)
+    # If base bug has commits, return them
+    if base_bug_raw_data['detail'][0]['repositories']:
+        return base_bug_raw_data
+    else:
+        # If not, check if there is an original Backlog with commits.
+        backlog = [clone for clone in base_bug.fields.issuelinks if
+                   clone.type.name == 'Cloners' and hasattr(clone, 'inwardIssue') and clone.inwardIssue.key.startswith(
+                       "BACKLOG")]
+        if backlog:
+            original = jira.issue(backlog[0].inwardIssue.key)
+            return __get_data(jira, original.id)
+        else:
+            return base_bug_raw_data
+
+
+def __get_data(jira, id):
     commits_url = jira._options['server'] + "/rest/dev-status/1.0/issue/detail?"
-    commits_url += "issueId=" + base_bug.id
+    commits_url += "issueId=" + id
     commits_url += "&applicationType=github&dataType=repository&_=157263009880"
     sess_get = jira._session.get
     response = sess_get(commits_url)
