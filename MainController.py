@@ -172,7 +172,7 @@ class MainController:
                                                   'authorTimestamp': 1}]})
 
             # Initialize JIRA comment.
-            jira_comment = "**Attention: This is the outcome of an automated process!**"
+            jira_comment = "*Attention: This is the outcome of an automated process!*"
             jira_comment += "\nPRs:"
 
             # Go through all repositories.
@@ -236,14 +236,14 @@ class MainController:
                             # Flag that we have merge conflicts, so we can signalize that on the jira comment later.
                             has_merge_conflicts = True
                             self.gui.log_error("Unable to cherry-pick '" + sha + "': " + gce.stderr.strip())
-                            # Delete SP case branch.
-                            git.checkout(base_version_branch)
-                            git.branch("-D", sp_key)
+                            # Delete changes.
+                            git.reset('--hard')
                             break
                         # Rename commits with backport message.
                         git.commit('--amend', '-m', commit_message)
 
                 # Proceed with the backport, if we don't have conflicts
+                base_pr = version_pr = None
                 if has_merge_conflicts is False:
                     try:
                         # Push changes.
@@ -258,7 +258,7 @@ class MainController:
                     # Build PR message.
                     self.master1 = self.gui.master1_input.get()
                     self.master2 = self.gui.master2_input.get()
-                    pr_message = "*Attention: This is the outcome of an automated process!*"
+                    pr_message = "**Attention: This is the outcome of an automated process!**"
                     pr_message += "\nMerge Masters: " + self.master1 + " and " + self.master2 + "\n"
                     pr_message += "Cherry-picks:\n"
                     for url in urls:
@@ -276,7 +276,6 @@ class MainController:
                         upstream_repo.get_branch(base_version_branch)
                         base_pr = upstream_repo.create_pull(commit_message, pr_message, base_version_branch,
                                                             '{}:{}'.format(self.github_username, sp_key), True)
-                        base_pr
                     except GithubException as ge:
                         if ge.status == 422:
                             self.gui.log_error(
@@ -294,7 +293,6 @@ class MainController:
                         upstream_repo.get_branch(sp_version_branch)
                         version_pr = upstream_repo.create_pull(commit_message, pr_message, sp_version_branch,
                                                                '{}:{}'.format(self.github_username, sp_key), True)
-                        version_pr
                     except GithubException as ge:
                         if ge.status == 422:
                             self.gui.log_error(
@@ -320,7 +318,7 @@ class MainController:
                 try:
                     if base_pr:
                         jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
-                    else:
+                    elif has_merge_conflicts:
                         jira_comment += " There are conflicts that needs to be manually treated."
                 except:
                     pass
@@ -328,8 +326,6 @@ class MainController:
                 try:
                     if version_pr:
                         jira_comment += "\n** " + sp_version_branch + ": " + base_pr.html_url
-                    else:
-                        jira_comment += " There are conflicts that needs to be manually treated."
                 except:
                     pass
 
