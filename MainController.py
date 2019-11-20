@@ -319,7 +319,7 @@ class MainController:
                     if base_pr:
                         jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
                     elif has_merge_conflicts:
-                        jira_comment += " There are conflicts that needs to be manually treated."
+                        jira_comment += " There are conflicts that need to be manually treated."
                 except:
                     pass
 
