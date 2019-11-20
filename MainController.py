@@ -312,18 +312,14 @@ class MainController:
                 self.gui.log_info("Done with " + repository['name'] + "!")
 
                 # Add PR links in the JIRA case
-                if has_merge_conflicts is False:
-                    self.gui.log_info("Adding PR links in " + sp_key + "...")
+                self.gui.log_info("Adding PR links in " + sp_key + "...")
                 jira_comment += "\n* " + repository['name'] + ":"
-                try:
-                    if base_pr:
-                        jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
-                    elif has_merge_conflicts:
-                        jira_comment += " There are conflicts that need to be manually treated."
-                    if version_pr:
-                        jira_comment += "\n** " + sp_version_branch + ": " + version_pr.html_url
-                except:
-                    pass
+                if base_pr:
+                    jira_comment += "\n** " + base_version_branch + ": " + base_pr.html_url
+                elif has_merge_conflicts:
+                    jira_comment += " There are conflicts that need to be manually treated."
+                if version_pr:
+                    jira_comment += "\n** " + sp_version_branch + ": " + version_pr.html_url
 
             # Add pull-request-sent label
             issue.fields.labels.append(u"pull-request-sent")
