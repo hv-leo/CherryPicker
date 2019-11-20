@@ -321,7 +321,7 @@ class MainController:
                     elif has_merge_conflicts:
                         jira_comment += " There are conflicts that need to be manually treated."
                     if version_pr:
-                        jira_comment += "\n** " + sp_version_branch + ": " + base_pr.html_url
+                        jira_comment += "\n** " + sp_version_branch + ": " + version_pr.html_url
                 except:
                     pass
 
