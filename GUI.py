@@ -1,3 +1,15 @@
+"""
+#
+# Cherry-Picker
+#
+# Copyright (C) 2020 by Leonardo Coelho: https://www.linkedin.com/in/leo-coelho/
+#
+################################################################################
+#
+# This file is subject to the terms and conditions defined in
+# file 'LICENSE', which is part of this source code package.
+#
+"""
 import tkinter as tk
 from tkinter import ttk, filedialog
 from tkinter.scrolledtext import ScrolledText
