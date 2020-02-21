@@ -104,7 +104,7 @@ class MainController:
         self.github_password = self.gui.github_password_input.get()
         try:
             self.github_connection = Github(self.github_username, self.github_password)
-            upstream_user = self.github_connection.get_user('pentaho')
+            me = self.github_connection.get_user(self.github_username)
         except GithubException as ge:
             self.gui.log_error("Unable to connect to GitHub: " + ge.data['message'])
             self.gui.log_info("Done!")
@@ -146,10 +146,7 @@ class MainController:
                         break
 
                     # Commits are missing
-                    try:
-                        upstream_repo = upstream_user.get_repo(rep_name)
-                    except GithubException:
-                        upstream_repo = self.github_connection.get_user('webdetails').get_repo(rep_name)
+                    upstream_repo = me.get_repo(rep_name).parent
                     try:
                         pr = upstream_repo.get_pull(not_missing_link.split('/')[-1])
                     except:
@@ -167,10 +164,8 @@ class MainController:
                     rep_name = missing_link.split('/')[-3]
                     pr_nr = missing_link.split('/')[-1]
                     pr_nr = int(''.join([i for i in pr_nr if i.isdigit()]))
-                    try:
-                        upstream_repo = upstream_user.get_repo(rep_name)
-                    except GithubException:
-                        upstream_repo = self.github_connection.get_user('webdetails').get_repo(rep_name)
+
+                    upstream_repo = me.get_repo(rep_name).parent
                     try:
                         pr = upstream_repo.get_pull(pr_nr)
                     except:
@@ -278,10 +273,7 @@ class MainController:
 
                     # Build and send Pull Request.
                     self.gui.log_info("Opening PRs for " + sp_key + ".")
-                    try:
-                        upstream_repo = upstream_user.get_repo(repository['name'])
-                    except GithubException:
-                        upstream_repo = self.github_connection.get_user('webdetails').get_repo(repository['name'])
+                    upstream_repo = me.get_repo(repository['name']).parent
 
                     # For version branch
                     try:
