@@ -9,7 +9,8 @@ Simple application to automate backporting work.
 3. Run application: ```python3 MainController.py```.
 
 ## Use Case
-LinkedIn article: [Building Service Packs in an automated fashion](https://www.linkedin.com/pulse/building-service-packs-automated-fashion-leonardo-coelho/).
+
+- LinkedIn article: [Building Service Packs in an automated fashion](https://www.linkedin.com/pulse/building-service-packs-automated-fashion-leonardo-coelho/).
 
 ## Authors:
 
