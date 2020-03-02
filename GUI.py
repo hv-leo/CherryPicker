@@ -57,7 +57,7 @@ class GUI:
         self.logger = None
 
         self.window = tk.Tk()
-        self.window.state('zoomed')
+        self.window.state('normal')
         self.window.title("Tatooine Backporter")
         self.create_widgets()
 
